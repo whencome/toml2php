@@ -16,6 +16,9 @@ const (
     PhpTypeArray
 )
 
+// define indent char
+var IndentChar string = "    "
+
 
 type PHPStruct struct {
 
@@ -129,7 +132,7 @@ func (phpKV *PHPKeyValuePair) GetValue(depth int) string {
 
 func (phpKV *PHPKeyValuePair) String(depth int) string {
     buf := bytes.Buffer{}
-    buf.WriteString(strings.Repeat("\t", depth))
+    buf.WriteString(strings.Repeat(IndentChar, depth))
     if isPositiveIntNumeric(phpKV.Key) {
         buf.WriteString(phpKV.Key)
     } else {
@@ -264,14 +267,14 @@ func (phpArr *PHPArray) String(depth int) string {
     if phpArr.Values != nil && valSize > 0 {
         result.WriteString("\n")
         for i, kv := range phpArr.Values {
-            result.WriteString("\t")
+            result.WriteString(IndentChar)
             result.WriteString(kv.String(depth+1))
             if i != valSize - 1 {
                 result.WriteString(",")
             }
             result.WriteString("\n")
         }
-        result.WriteString(strings.Repeat("\t", depth))
+        result.WriteString(strings.Repeat(IndentChar, depth+1))
     }
     result.WriteString("]")
     return result.String()

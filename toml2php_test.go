@@ -51,3 +51,66 @@ func TestParseInlineTable(t *testing.T) {
     }
     t.Log("parsed: ", parsed.String(0))
 }
+
+func TestParseMultiLine(t *testing.T) {
+    toml := `key3 = """
+One
+Two"""`
+    rs, err := parse(toml)
+    if err != nil {
+        t.Logf("parse %s failed: %s\n", toml, err)
+        t.Fail()
+        return
+    }
+    t.Logf("parse %s success: %s\n", toml, rs.String(0))
+}
+
+func TestParseSingle(t *testing.T) {
+    var tomls = []string{
+        // number
+        `123554`,
+        `23.4056`,
+        `0.2399`,
+        // boolean
+        `true`,
+        `false`,
+        // string
+        `"good"`,
+        `"hello,world"`,
+    }
+    for _, toml := range tomls {
+        rs, err := ParseSingle(toml)
+        if err != nil {
+            t.Logf("parse %s failed: %s\n", toml, err)
+            t.Fail()
+            continue
+        }
+        t.Logf("parse %s success: %s\n", toml, rs)
+    }
+}
+
+func TestParseTable(t *testing.T) {
+    tomlFile := "example.toml"
+    file, err := os.Open(tomlFile)
+    if err != nil {
+        t.Logf("open file %s failed \n", tomlFile)
+        t.Fail()
+    }
+    defer file.Close()
+
+    tomlBytes, err := ioutil.ReadAll(file)
+    if err != nil {
+        t.Log("read file content failed\n")
+        t.Fail()
+    }
+
+    rs, err := ParseTable(string(tomlBytes))
+    if err != nil {
+        t.Logf("parse table failed: %s\n", err)
+        t.Fail()
+    }
+
+    t.Logf("\n=======================\n")
+
+    t.Log(rs)
+}

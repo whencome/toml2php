@@ -33,7 +33,7 @@ func runesContains(arr []rune, r rune) bool {
 
 // isNumeric 判断给定的字符串是否是数字
 func isNumeric(str string) bool {
-   matched, err := regexp.MatchString(`^(\+|\-)\d*(\.\d+)?$`, str)
+   matched, err := regexp.MatchString(`^(\+|\-)?\d*(\.\d+)?$`, str)
    if err != nil {
        return false
    }
@@ -41,7 +41,7 @@ func isNumeric(str string) bool {
 }
 
 func isPositiveIntNumeric(str string) bool {
-    matched, err := regexp.MatchString(`^(0|[1-9]*(\.\d+)?)$`, str)
+    matched, err := regexp.MatchString(`^(0|[1-9]+)$`, str)
     if err != nil {
         return false
     }
@@ -81,6 +81,7 @@ func normalize(snippet string) (string, error) {
     snippet = strings.ReplaceAll(snippet, "\n\r", "\n")
     // 处理制表符（\t）
     snippet = strings.ReplaceAll(snippet, "\t", "")
+    snippet = strings.ReplaceAll(snippet, "\n", "\\n")
 
     // Run, char by char.
     normalized     := ""

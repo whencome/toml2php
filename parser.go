@@ -1,10 +1,9 @@
 package toml2php
 
 import (
+    "errors"
     "strconv"
     "strings"
-
-    "github.com/pkg/errors"
 )
 
 // parse Parse PHP Array
@@ -29,7 +28,7 @@ func parse(toml string) (*PHPArray, error) {
         if lineSize == 0 || line[0] == '#' {
             continue
         }
-
+        
         // Array of Tables
         if string(line[0:2]) == "[[" && string(line[lineSize-2:]) == "]]" {
             tableName := line[2:lineSize-2]
@@ -54,7 +53,37 @@ func parse(toml string) (*PHPArray, error) {
             pos := strings.Index(rawLine, "=")
             field := strings.TrimSpace(rawLine[0:pos])
             val := strings.TrimSpace(rawLine[pos+1:])
-            parsePHPKeyValue(phpArr, field, val)
+            valSize := len(val)
+            if val[0:3] == `"""` {
+                if valSize == 3 || (valSize > 3 && val[valSize-3:] != `"""`) {
+                    for {
+                        ln++
+                        nextLine := strings.TrimSpace(arrToml[ln])
+                        val += "\n"
+                        val += arrToml[ln]
+                        if nextLine == `"""` || nextLine[len(nextLine)-3:] == `"""` {
+                            break
+                        }
+                    }
+                }
+            }
+            if val[0:3] == `'''` {
+                if valSize == 3 || (valSize > 3 && val[valSize-3:] != `'''`) {
+                    for {
+                        ln++
+                        nextLine := strings.TrimSpace(arrToml[ln])
+                        val += "\n"
+                        val += arrToml[ln]
+                        if nextLine == `'''` || nextLine[len(nextLine)-3:] == `'''` {
+                            break
+                        }
+                    }
+                }
+            }
+            err = parsePHPKeyValue(phpArr, field, val)
+            if err != nil {
+                return nil, err
+            }
         } else if string(line[0:1]) == "[" && string(line[lineSize-1:]) != "]" {
             return nil, errors.New("Key groups have to be on a line by themselves: " + string(line))
         } else {
@@ -294,15 +323,23 @@ func parsePHPKeyValue(phpArr *PHPArray, key, val string) error {
         buffer += string(keyChars[i])
     }
 
+    if buffer != "" {
+        recurseKeys = append(recurseKeys, buffer)
+        buffer = ""
+    }
+
     phpVal, err := parsePHPValue(val)
     if err != nil {
         return err
     }
-    field := recurseKeys[len(recurseKeys) - 1]
-    if isNumeric(field) {
-        phpArr.AddDeepValue(recurseKeys[:len(recurseKeys)-1], field, phpVal)
-    } else {
-        phpArr.AddDeepValue(recurseKeys[:len(recurseKeys)-1], field, phpVal)
+    
+    if len(recurseKeys) > 0 {
+        field := recurseKeys[len(recurseKeys)-1]
+        if isNumeric(field) {
+            phpArr.AddDeepValue(recurseKeys[:len(recurseKeys)-1], field, phpVal)
+        } else {
+            phpArr.AddDeepValue(recurseKeys[:len(recurseKeys)-1], field, phpVal)
+        }
     }
     return nil
 }
