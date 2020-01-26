@@ -139,9 +139,11 @@ key4 = -17
 
 # For large numbers, you may use underscores to enhance readability. Each
 # underscore must be surrounded by at least one digit.
-key1 = 1_000
-key2 = 5_349_221
-key3 = 1_2_3_4_5     # valid but inadvisable
+
+# not supported
+#key1 = 1_000
+#key2 = 5_349_221
+#key3 = 1_2_3_4_5     # valid but inadvisable
 
 
 ################################################################################
@@ -156,20 +158,20 @@ key1 = +1.0
 key2 = 3.1415
 key3 = -0.01
 
-[float.exponent]
+# [float.exponent]
 
-key1 = 5e+22
-key2 = 1e6
-key3 = -2E-2
+# key1 = 5e+22
+# key2 = 1e6
+# key3 = -2E-2
 
-[float.both]
+# [float.both]
 
-key = 6.626e-34
+# key = 6.626e-34
 
-[float.underscores]
+# [float.underscores]
 
-key1 = 9_224_617.445_991_228_313
-key2 = 1e1_000
+# key1 = 9_224_617.445_991_228_313
+# key2 = 1e1_000
 
 
 ################################################################################
@@ -188,11 +190,11 @@ False = false
 
 # Datetimes are RFC 3339 dates.
 
-[datetime]
+# [datetime]
 
-key1 = 1979-05-27T07:32:00Z
-key2 = 1979-05-27T00:32:00-07:00
-key3 = 1979-05-27T00:32:00.999999-07:00
+# key1 = 1979-05-27T07:32:00Z
+# key2 = 1979-05-27T00:32:00-07:00
+# key3 = 1979-05-27T00:32:00.999999-07:00
 
 
 ################################################################################

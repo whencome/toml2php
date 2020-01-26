@@ -193,16 +193,13 @@ func (phpArr *PHPArray) AddRecurseKeys(fields []string) {
     }
 }
 
-// AddDeepValue add value for specified key, which may be in a deep length
-func (phpArr *PHPArray) AddDeepValue(paths []string, key string, val *PHPValue) {
+// AddDeepValue add value for specified path, which may be in a deep length
+func (phpArr *PHPArray) AddDeepValue(paths []string, val *PHPValue) {
     pathSize := len(paths)
     refPhpArr := phpArr
-    // 为0，表示在当前节点添加
     if pathSize == 0 {
-        phpArr.AddChild(key, val)
         return
     }
-    // 深度添加
     var refKVPair *PHPKeyValuePair
     for i := 0; i < pathSize; i++ {
         field := paths[i]
@@ -217,19 +214,31 @@ func (phpArr *PHPArray) AddDeepValue(paths []string, key string, val *PHPValue) 
             }
         }
         if !found {
-            arr := NewPHPArray()
-            kvPair := &PHPKeyValuePair{
-                Key:field,
-            }
-            refPhpArr.Values = append(refPhpArr.Values, kvPair)
-            refPhpArr = arr
             if i == pathSize - 1 {
+                kvPair := &PHPKeyValuePair{
+                    Key:field,
+                    Type:PhpTypeValue,
+                    Value:val,
+                }
                 refKVPair = kvPair
+                refPhpArr.Values = append(refPhpArr.Values, kvPair)
+            } else {
+                kvPair := &PHPKeyValuePair{
+                    Key:field,
+                    Type:PhpTypeArray,
+                    Value:NewPHPArray(),
+                }
+                refKVPair = kvPair
+                refPhpArr.Values = append(refPhpArr.Values, kvPair)
+                refPhpArr = refKVPair.Value.(*PHPArray)
+            }
+        } else {
+            if i == pathSize - 1 {
+                refKVPair.Type = PhpTypeValue
+                refKVPair.Value = val
             }
         }
     }
-    refKVPair.Value = val
-    refKVPair.Type = PhpTypeValue
 }
 
 func (phpArr *PHPArray) AddChild(key string, val *PHPValue) {
@@ -263,18 +272,20 @@ func (phpArr *PHPArray) MergeChilds(arr *PHPArray) {
 func (phpArr *PHPArray) String(depth int) string {
     result := bytes.Buffer{}
     result.WriteString("[")
-    valSize := len(phpArr.Values)
-    if phpArr.Values != nil && valSize > 0 {
-        result.WriteString("\n")
-        for i, kv := range phpArr.Values {
-            result.WriteString(IndentChar)
-            result.WriteString(kv.String(depth+1))
-            if i != valSize - 1 {
-                result.WriteString(",")
-            }
+    if phpArr != nil {
+        valSize := len(phpArr.Values)
+        if phpArr.Values != nil && valSize > 0 {
             result.WriteString("\n")
+            for i, kv := range phpArr.Values {
+                result.WriteString(IndentChar)
+                result.WriteString(kv.String(depth + 1))
+                if i != valSize-1 {
+                    result.WriteString(",")
+                }
+                result.WriteString("\n")
+            }
+            result.WriteString(strings.Repeat(IndentChar, depth+1))
         }
-        result.WriteString(strings.Repeat(IndentChar, depth+1))
     }
     result.WriteString("]")
     return result.String()

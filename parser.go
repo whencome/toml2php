@@ -9,7 +9,7 @@ import (
 // parse Parse PHP Array
 func parse(toml string) (*PHPArray, error) {
     phpArr := &PHPArray{}
-
+    
     // normalize the toml string
     toml, err := normalize(toml)
     if err != nil {
@@ -19,6 +19,7 @@ func parse(toml string) (*PHPArray, error) {
     // split lines
     arrToml := strings.Split(toml, "\n")
     arrSize := len(arrToml)
+
     var recurseKeys []string
     for ln := 0; ln < arrSize; ln++ {
         line := []rune(strings.TrimSpace(arrToml[ln]))
@@ -54,33 +55,34 @@ func parse(toml string) (*PHPArray, error) {
             field := strings.TrimSpace(rawLine[0:pos])
             val := strings.TrimSpace(rawLine[pos+1:])
             valSize := len(val)
-            if val[0:3] == `"""` {
+            if valSize >= 3 && val[0:3] == `"""` {
                 if valSize == 3 || (valSize > 3 && val[valSize-3:] != `"""`) {
                     for {
                         ln++
                         nextLine := strings.TrimSpace(arrToml[ln])
                         val += "\n"
                         val += arrToml[ln]
-                        if nextLine == `"""` || nextLine[len(nextLine)-3:] == `"""` {
+                        if nextLine == `"""` || (len(nextLine) > 3 && nextLine[len(nextLine)-3:] == `"""`) {
                             break
                         }
                     }
                 }
             }
-            if val[0:3] == `'''` {
+            if valSize >= 3 && val[0:3] == `'''` {
                 if valSize == 3 || (valSize > 3 && val[valSize-3:] != `'''`) {
                     for {
                         ln++
                         nextLine := strings.TrimSpace(arrToml[ln])
                         val += "\n"
                         val += arrToml[ln]
-                        if nextLine == `'''` || nextLine[len(nextLine)-3:] == `'''` {
+                        if nextLine == `'''` || (len(nextLine) > 3 && nextLine[len(nextLine)-3:] == `'''`) {
                             break
                         }
                     }
                 }
             }
-            err = parsePHPKeyValue(phpArr, field, val)
+            k := buildRecurseKey(recurseKeys, field)
+            err = parsePHPKeyValue(phpArr, k, val)
             if err != nil {
                 return nil, err
             }
@@ -92,6 +94,13 @@ func parse(toml string) (*PHPArray, error) {
     }
 
     return phpArr, nil
+}
+
+func buildRecurseKey(precedingKeys []string, key string) string {
+    if precedingKeys == nil || len(precedingKeys) == 0 {
+        return key
+    }
+    return strings.Join(precedingKeys, ".") + "." + key
 }
 
 func parsePHPValue(val string) (*PHPValue, error) {
@@ -283,7 +292,7 @@ func parsePHPInlineTableFieldValue(snippet string) (*PHPArray, error) {
         return nil, errors.New("[parse] invalid inline toml table data: " + val)
     }
     phpArr := NewPHPArray()
-    phpArr.AddDeepValue(nil, field, phpVal)
+    phpArr.AddDeepValue([]string{field}, phpVal)
     return phpArr, nil
 }
 
@@ -334,12 +343,7 @@ func parsePHPKeyValue(phpArr *PHPArray, key, val string) error {
     }
     
     if len(recurseKeys) > 0 {
-        field := recurseKeys[len(recurseKeys)-1]
-        if isNumeric(field) {
-            phpArr.AddDeepValue(recurseKeys[:len(recurseKeys)-1], field, phpVal)
-        } else {
-            phpArr.AddDeepValue(recurseKeys[:len(recurseKeys)-1], field, phpVal)
-        }
+        phpArr.AddDeepValue(recurseKeys, phpVal)
     }
     return nil
 }

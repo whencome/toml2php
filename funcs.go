@@ -81,7 +81,7 @@ func normalize(snippet string) (string, error) {
     snippet = strings.ReplaceAll(snippet, "\n\r", "\n")
     // 处理制表符（\t）
     snippet = strings.ReplaceAll(snippet, "\t", "")
-    snippet = strings.ReplaceAll(snippet, "\n", "\\n")
+    // snippet = strings.ReplaceAll(snippet, "\n", "\\n")
 
     // Run, char by char.
     normalized     := ""
@@ -154,11 +154,10 @@ func normalize(snippet string) (string, error) {
             }
         } else if chars[i] == '#' && !openString && !openKeygroup {
             for {
-                if i < charsSize && chars[i] != '\n' {
-                    i++
-                } else {
-                    break
+                if i >= charsSize || chars[i] == '\n' {
+                     break
                 }
+                i++
             }
             keep = openBrackets == 0
         }

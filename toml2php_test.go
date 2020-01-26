@@ -42,14 +42,35 @@ func TestParseArray(t *testing.T) {
 }
 
 func TestParseInlineTable(t *testing.T) {
-    tomlInlineTable := `{title = "Games", url = "/games", childs = [{title = "Game A", url = "/games/game-a", childs = []}, {title = "Game B", url = "/games/game-b", childs = []}]}`
-    tomlRunes := []rune(tomlInlineTable)
-    parsed, err := parsePHPInlineTable(tomlRunes)
+    tomlInlineTable := `PR17 = [
+  {title = "Home", url = "/", childs = []},
+  {title = "Games", url = "/games", childs = [{title = "Game A", url = "/games/game-a", childs = []}, {title = "Game B", url = "/games/game-b", childs = []}]},
+  {title = "About us", url = "/about", childs = []}
+]`
+    parsed, err := parsePHPInlineTableFieldValue(tomlInlineTable)
     if err != nil {
         t.Logf("parsePHPInlineTable failed: %s \n", err)
         t.Fail()
+        return
     }
     t.Log("parsed: ", parsed.String(0))
+}
+
+func TestParsePHPKeyValue(t *testing.T) {
+    phpArr := &PHPArray{}
+    key := "PR17"
+    val := `[
+  {title = "Home", url = "/", childs = []},
+  {title = "Games", url = "/games", childs = [{title = "Game A", url = "/games/game-a", childs = []}, {title = "Game B", url = "/games/game-b", childs = []}]},
+  {title = "About us", url = "/about", childs = []}
+]`
+    err := parsePHPKeyValue(phpArr, key, val)
+    if err != nil {
+        t.Logf("parsePHPKeyValue failed: %s \n", err)
+        t.Fail()
+        return
+    }
+    t.Log("parsed: ", phpArr.String(0))
 }
 
 func TestParseMultiLine(t *testing.T) {
