@@ -67,6 +67,10 @@ func fmtPhpString(str string) string {
         if chars[i] == '\n' {
             buffer.WriteRune('\\')
             buffer.WriteRune('n')
+            continue
+        }
+        if i > 0 && chars[i] == '\\' && chars[i-1] != '\\' && (i+1 == charsSize || chars[i+1] == '\n') {
+            continue
         }
         buffer.WriteRune(chars[i])
     }
@@ -432,36 +436,4 @@ func parseInlineTableFieldValue(snippet string) (string, error) {
     return result.String(), nil
 }
 
-// parseKeyValue takes a key expression and the current pointer to position in the right hierarchy.
-// Then it sets the corresponding value on that position.
-// func parseKeyValue(key, val string) (string, error) {
-//     openQuote := false
-//     openDoubleQuote := false
-//     buffer := ""
-//     result := bytes.Buffer{}
-//
-//     keyChars := []rune(key)
-//     keyCharsSize := len(keyChars)
-//
-//     for i := 0; i < keyCharsSize; i++ {
-//         // Handle quoting
-//         if keyChars[i] == '"' {
-//             if !openQuote {
-//                 openDoubleQuote = !openDoubleQuote
-//                 continue
-//             }
-//         }
-//         if keyChars[i] == '\'' {
-//             if !openDoubleQuote {
-//                 openQuote = !openQuote
-//                 continue
-//             }
-//         }
-//
-//         // Handle dotted keys
-//         if keyChars[i] == '.' && !openQuote && !openDoubleQuote {
-//
-//         }
-//     }
-// }
 

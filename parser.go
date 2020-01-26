@@ -1,6 +1,7 @@
 package toml2php
 
 import (
+    "bytes"
     "errors"
     "strconv"
     "strings"
@@ -80,6 +81,21 @@ func parse(toml string) (*PHPArray, error) {
                         }
                     }
                 }
+            }
+            // 支持单引号，对单引号的内容进行一次转义
+            if valSize > 2 && val[0] == '\'' && val[1] != '\'' && val[valSize-1] == '\'' {
+                buf := bytes.Buffer{}
+                valChars := []rune(val)
+                valCharsSize := len(valChars)
+                for j := 0; j < valCharsSize; j++ {
+                    if runeInArray(valChars[j], []rune{'\\', '"'}) {
+                        buf.WriteRune('\\')
+                        buf.WriteRune(valChars[j])
+                    } else {
+                        buf.WriteRune(valChars[j])
+                    }
+                }
+                val = buf.String()
             }
             k := buildRecurseKey(recurseKeys, field)
             err = parsePHPKeyValue(phpArr, k, val)
