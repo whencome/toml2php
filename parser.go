@@ -295,7 +295,7 @@ func parsePHPInlineTable(chars []rune) (*PHPArray, error) {
     return phpArr, nil
 }
 
-// parseInlineTableFieldValue 解析键值对内容
+// parsePHPInlineTableFieldValue 解析键值对内容
 func parsePHPInlineTableFieldValue(snippet string) (*PHPArray, error) {
     pos := strings.Index(snippet, "=")
     if pos <= 0 {

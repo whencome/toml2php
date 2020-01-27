@@ -16,13 +16,11 @@ const (
     PhpTypeArray
 )
 
-// define indent char
-var IndentChar string = "    "
-
-
-type PHPStruct struct {
-
-}
+// define indent string, default 4 whitespace
+var IndentString = "    "
+// define php array format, use "array()" or "[]"
+var PHPArrayStartString = "array("
+var PHPArrayEndString = ")"
 
 // PHPValue define a php value
 type PHPValue struct {
@@ -43,15 +41,11 @@ type PHPKeyValuePair struct {
 
 // PHPArray define a php array （array & map）
 type PHPArray struct {
-    // Childs          map[string]*PHPArray
-    // Key             *PHPKey
-    // Value           *PHPValue
     Values          []*PHPKeyValuePair
 }
 
 func NewPHPArray() *PHPArray {
     return &PHPArray{
-        // Childs:make([]*PHPArray, 0),
         Values:make([]*PHPKeyValuePair, 0),
     }
 }
@@ -132,7 +126,7 @@ func (phpKV *PHPKeyValuePair) GetValue(depth int) string {
 
 func (phpKV *PHPKeyValuePair) String(depth int) string {
     buf := bytes.Buffer{}
-    buf.WriteString(strings.Repeat(IndentChar, depth))
+    buf.WriteString(strings.Repeat(IndentString, depth))
     if isPositiveIntNumeric(phpKV.Key) {
         buf.WriteString(phpKV.Key)
     } else {
@@ -271,23 +265,23 @@ func (phpArr *PHPArray) MergeChilds(arr *PHPArray) {
 
 func (phpArr *PHPArray) String(depth int) string {
     result := bytes.Buffer{}
-    result.WriteString("[")
+    result.WriteString(PHPArrayStartString)
     if phpArr != nil {
         valSize := len(phpArr.Values)
         if phpArr.Values != nil && valSize > 0 {
             result.WriteString("\n")
             for i, kv := range phpArr.Values {
-                result.WriteString(IndentChar)
+                result.WriteString(IndentString)
                 result.WriteString(kv.String(depth + 1))
                 if i != valSize-1 {
                     result.WriteString(",")
                 }
                 result.WriteString("\n")
             }
-            result.WriteString(strings.Repeat(IndentChar, depth+1))
+            result.WriteString(strings.Repeat(IndentString, depth+1))
         }
     }
-    result.WriteString("]")
+    result.WriteString(PHPArrayEndString)
     return result.String()
 }
 
