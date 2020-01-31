@@ -1,5 +1,10 @@
 package toml2php
 
+// SetIndent 设置缩进字符
+func SetIndent(indent string) {
+    IndentString = indent
+}
+
 // ParseSingle 解析单个值，如整数、浮点数、字符串、布尔值等等
 func ParseSingle(snippet string) (string, error) {
     phpVal, err := parsePHPValue(snippet)
