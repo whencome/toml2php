@@ -305,7 +305,7 @@ func parsePHPInlineTableFieldValue(snippet string) (*PHPArray, error) {
     val := strings.TrimSpace(snippet[pos+1:])
     phpVal, err := parsePHPValue(val)
     if err != nil {
-        return nil, errors.New("[parse] invalid inline toml table data: " + val)
+        return nil, errors.New("[parse] invalid inline toml table data: " + val + " <= " + snippet)
     }
     phpArr := NewPHPArray()
     phpArr.AddDeepValue([]string{field}, phpVal)

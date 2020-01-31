@@ -33,11 +33,11 @@ func runesContains(arr []rune, r rune) bool {
 
 // isNumeric 判断给定的字符串是否是数字
 func isNumeric(str string) bool {
-   matched, err := regexp.MatchString(`^(\+|\-)?\d*(\.\d+)?$`, str)
-   if err != nil {
-       return false
-   }
-   return matched
+    matched, err := regexp.MatchString(`^(\+|\-)?(0|[1-9]\d*)((\.\d+)?((e|E)(\+|\-)?[1-9]\d*)?)?$`, str)
+    if err != nil {
+        return false
+    }
+    return matched
 }
 
 func isPositiveIntNumeric(str string) bool {
@@ -69,7 +69,8 @@ func fmtPhpString(str string) string {
             buffer.WriteRune('n')
             continue
         }
-        if i > 0 && chars[i] == '\\' && chars[i-1] != '\\' && (i+1 == charsSize || chars[i+1] == '\n') {
+        if (i == 0 && chars[i] == '\\' && (i+1 == charsSize || chars[i+1] == '\n')) ||
+            (i > 0 && chars[i] == '\\' && chars[i-1] != '\\' && (i+1 == charsSize || chars[i+1] == '\n')) {
             continue
         }
         buffer.WriteRune(chars[i])

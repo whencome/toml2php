@@ -158,15 +158,15 @@ key1 = +1.0
 key2 = 3.1415
 key3 = -0.01
 
-# [float.exponent]
+[float.exponent]
 
-# key1 = 5e+22
-# key2 = 1e6
-# key3 = -2E-2
+key1 = 5e+22
+key2 = 1e6
+key3 = -2E-2
 
-# [float.both]
+[float.both]
 
-# key = 6.626e-34
+key = 6.626e-34
 
 # [float.underscores]
 
