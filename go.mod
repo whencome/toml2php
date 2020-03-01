@@ -1,4 +1,4 @@
-module toml2php
+module github.com/whencome/toml2php
 
 go 1.13
 
