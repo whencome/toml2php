@@ -122,7 +122,7 @@ func normalize(snippet string) (string, error) {
 			keep = false
 		} else if (openString || openLString) && chars[i] == '\n' {
 			return "", errors.New("Multi-line string not allowed on: " + lineBuffer)
-		} else if chars[i] == '"' && chars[i-1] != '\\' && !openLString && !openMLString {
+		} else if ((i > 0 && chars[i] == '"' && chars[i-1] != '\\') || (i == 0 && chars[i] == '"')) && !openLString && !openMLString {
 			if charsSize >= i+3 && string(chars[i:i+3]) == `"""` {
 				i += 2
 				normalized += `"""`
