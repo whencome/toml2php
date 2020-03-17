@@ -109,6 +109,7 @@ winpath  = 'C:\Users\nodejs\templates'
 winpath2 = '\\ServerX\admin$\system32\'
 quoted   = 'Tom "Dubs" Preston-Werner'
 regex    = '<\i\c*\s*>'
+json = '{"code":"0","name":"全国销售"}'
 
 
 [string.literal.multiline]

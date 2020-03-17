@@ -64,6 +64,34 @@ func fmtPhpString(str string) string {
 			buffer.WriteRune('\'')
 			continue
 		}
+		// 去除转义
+		if chars[i] == '\\' {
+			if i+1 < charsSize {
+				// 引号
+				if chars[i+1] == '"' {
+					buffer.WriteRune('"')
+					i += 1
+					continue
+				}
+				// // 换行符
+				// if chars[i+1] == 'n' {
+				// 	buffer.WriteRune('\n')
+				// 	i += 1
+				// 	continue
+				// }
+				// // 制表符
+				// if chars[i+1] == 't' {
+				// 	buffer.WriteRune('\t')
+				// 	i += 1
+				// 	continue
+				// }
+				// if chars[i+1] == 'v' {
+				// 	buffer.WriteRune('\v')
+				// 	i += 1
+				// 	continue
+				// }
+			}
+		}
 		if chars[i] == '\n' {
 			//	buffer.WriteRune('\\')
 			//	buffer.WriteRune('n')
