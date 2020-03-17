@@ -41,7 +41,7 @@ func isNumeric(str string) bool {
 }
 
 func isPositiveIntNumeric(str string) bool {
-	matched, err := regexp.MatchString(`^(0|[1-9]+)$`, str)
+	matched, err := regexp.MatchString(`^(0|[1-9]\d*)$`, str)
 	if err != nil {
 		return false
 	}
@@ -52,21 +52,22 @@ func isPositiveIntNumeric(str string) bool {
 func fmtPhpString(str string) string {
 	str = strings.TrimSpace(str)
 	if str == "" {
-		return "\"\""
+		return "''"
 	}
 	chars := []rune(str)
 	charsSize := len(chars)
 	buffer := bytes.Buffer{}
-	buffer.WriteRune('"')
+	buffer.WriteRune('\'')
 	for i := 0; i < charsSize; i++ {
-		if chars[i] == '"' && chars[i-1] != '\\' {
+		if chars[i] == '\'' && ((i ==0) || (i > 0 && chars[i-1] != '\\')) {
 			buffer.WriteRune('\\')
-			buffer.WriteRune('"')
+			buffer.WriteRune('\'')
 			continue
 		}
 		if chars[i] == '\n' {
-			buffer.WriteRune('\\')
-			buffer.WriteRune('n')
+			//	buffer.WriteRune('\\')
+			//	buffer.WriteRune('n')
+			buffer.WriteRune('\n')
 			continue
 		}
 		if (i == 0 && chars[i] == '\\' && (i+1 == charsSize || chars[i+1] == '\n')) ||
@@ -75,7 +76,7 @@ func fmtPhpString(str string) string {
 		}
 		buffer.WriteRune(chars[i])
 	}
-	buffer.WriteRune('"')
+	buffer.WriteRune('\'')
 	return buffer.String()
 }
 

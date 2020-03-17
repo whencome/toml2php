@@ -209,7 +209,7 @@ func parsePHPArray(chars []rune) (*PHPArray, error) {
                 }
                 return phpArr, nil
             }
-        } else if chars[i] == '"' && chars[i-1] != '\\' && !openLString {
+        } else if chars[i] == '"' && ((i == 0) || (i > 0 && chars[i-1] != '\\')) && !openLString {
             openString = !openString
         } else if chars[i] == '\'' && !openString {
             openLString = !openLString
