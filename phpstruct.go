@@ -168,6 +168,14 @@ func (phpArr *PHPArray) AddRecurseKeys(fields []string) {
 	refPhpArr := phpArr
 	for i := 0; i < fieldsSize; i++ {
 		field := fields[i]
+		// if the key wrapped in a quotation marks, then we should remove the quotation marks first
+		fieldChars := []rune(field)
+		fieldCharSize := len(fieldChars)
+		if (fieldChars[0] == '"' && fieldChars[fieldCharSize-1] == '"') ||
+			(fieldChars[0] == '\'' && fieldChars[fieldCharSize-1] == '\'') {
+			field = string(fieldChars[1:fieldCharSize-1])
+		}
+		// initialize the found flag
 		found := false
 		for _, v := range refPhpArr.Values {
 			if v.Key == field && v.Type == PhpTypeArray {
@@ -198,6 +206,7 @@ func (phpArr *PHPArray) AddDeepValue(paths []string, val *PHPValue) {
 	var refKVPair *PHPKeyValuePair
 	for i := 0; i < pathSize; i++ {
 		field := paths[i]
+		// 遍历查找
 		found := false
 		for _, v := range refPhpArr.Values {
 			if v.Key == field && v.Type == PhpTypeArray {

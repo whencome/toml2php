@@ -73,12 +73,22 @@ func fmtPhpString(str string) string {
 					i += 1
 					continue
 				}
-				// // 换行符
-				// if chars[i+1] == 'n' {
-				// 	buffer.WriteRune('\n')
-				// 	i += 1
-				// 	continue
-				// }
+				// 换行符
+				if chars[i+1] == 'n' {
+					buffer.WriteRune('\n')
+					i += 1
+					continue
+				}
+				// 转义符
+				if chars[i+1] == '\\' {
+					buffer.WriteRune('\\')
+					i += 1
+					continue
+				}
+				// 其他情形直接输出转义的字符
+				buffer.WriteRune(chars[i+1])
+				i += 1
+				continue
 				// // 制表符
 				// if chars[i+1] == 't' {
 				// 	buffer.WriteRune('\t')
@@ -235,7 +245,6 @@ func parseTableName(chars []rune) []string {
 	buffer := bytes.Buffer{}
 	strOpen := false
 	names := make([]string, 0)
-
 	charsSize := len(chars)
 	for i := 0; i < charsSize; i++ {
 		if chars[i] == '"' {

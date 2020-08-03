@@ -316,7 +316,7 @@ func parsePHPInlineTableFieldValue(snippet string) (*PHPArray, error) {
 func parsePHPKeyValue(phpArr *PHPArray, key, val string) error {
     openQuote := false
     openDoubleQuote := false
-    buffer := ""
+    buffer := &bytes.Buffer{}
 
     keyChars := []rune(key)
     keyCharsSize := len(keyChars)
@@ -328,29 +328,29 @@ func parsePHPKeyValue(phpArr *PHPArray, key, val string) error {
         if keyChars[i] == '"' {
             if !openQuote {
                 openDoubleQuote = !openDoubleQuote
-                continue
             }
+            continue
         }
         if keyChars[i] == '\'' {
             if !openDoubleQuote {
                 openQuote = !openQuote
-                continue
             }
+            continue
         }
 
         // Handle dotted keys
         if keyChars[i] == '.' && !openQuote && !openDoubleQuote {
-            recurseKeys = append(recurseKeys, buffer)
-            buffer = ""
+            recurseKeys = append(recurseKeys, buffer.String())
+            buffer.Reset()
             continue
         }
 
-        buffer += string(keyChars[i])
+        buffer.WriteRune(keyChars[i])
     }
 
-    if buffer != "" {
-        recurseKeys = append(recurseKeys, buffer)
-        buffer = ""
+    if buffer.Len() > 0 {
+        recurseKeys = append(recurseKeys, buffer.String())
+        buffer.Reset()
     }
 
     phpVal, err := parsePHPValue(val)
