@@ -244,12 +244,23 @@ func normalize(snippet string) (string, error) {
 func parseTableName(chars []rune) []string {
 	buffer := bytes.Buffer{}
 	strOpen := false
+	var strOpenChar rune
 	names := make([]string, 0)
 	charsSize := len(chars)
 	for i := 0; i < charsSize; i++ {
 		if chars[i] == '"' {
-			if !strOpen || (strOpen && chars[i-1] != '\\') {
+			if !strOpen || (strOpen && i > 0 &&  chars[i-1] != '\\' && strOpenChar == chars[i]) {
 				strOpen = !strOpen
+			}
+			if strOpen {
+				strOpenChar = chars[i]
+			}
+		} else if chars[i] == '\'' {
+			if !strOpen || (strOpen && i > 0 && chars[i-1] != '\\' && strOpenChar == chars[i]) {
+				strOpen = !strOpen
+			}
+			if strOpen {
+				strOpenChar = chars[i]
 			}
 		} else if chars[i] == '.' && !strOpen {
 			names = append(names, buffer.String())

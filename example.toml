@@ -68,6 +68,10 @@ point = { x = 1, y = 2 }
 name = { first = "Tom", last = "Preston-Werner" }
 point = { x = 1, y = 2 }
 
+['table.withdot.single_quote']
+name = { first = "Tom", last = "Preston-Werner" }
+point = { x = 1, y = 2 }
+
 
 ################################################################################
 ## String
